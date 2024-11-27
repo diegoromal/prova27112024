@@ -5,8 +5,15 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDataContext>();
 
-var app = builder.Build();
+builder.Services.AddCors(options =>
+    options.AddPolicy("Acesso Total",
+        configs => configs
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod())
+);
 
+var app = builder.Build();
 
 app.MapGet("/", () => "Prova A1");
 
@@ -55,10 +62,34 @@ app.MapPost("/api/tarefas/cadastrar", ([FromServices] AppDataContext ctx, [FromB
 });
 
 //PUT: http://localhost:5273/tarefas/alterar/{id}
-app.MapPut("/api/tarefas/alterar/{id}", ([FromServices] AppDataContext ctx, [FromRoute] string id) =>
+
+app.MapPut("/api/tarefas/alterar/{id}", ([FromRoute] string id,
+    [FromBody] Tarefa tarefaAlterada,
+    [FromServices] AppDataContext ctx) =>
 {
-    //Implementar a alteração do status da tarefa
+    Tarefa? tarefa = ctx.Tarefas.Find(id);
+    if (tarefa == null)
+    {
+        return Results.NotFound();
+    }
+    Categoria? categoria = ctx.Categorias.Find(tarefa.CategoriaId);
+    if (categoria is null)
+    {
+        return Results.NotFound();
+    }
+    tarefa.Categoria = categoria;
+    tarefa.Titulo = tarefaAlterada.Titulo;
+    tarefa.Descricao = tarefaAlterada.Descricao;
+    tarefa.Status = tarefaAlterada.Status;
+    ctx.Tarefas.Update(tarefa);
+    ctx.SaveChanges();
+    return Results.Ok(tarefa);
 });
+
+// app.MapPut("/api/tarefas/alterar/{id}", ([FromServices] AppDataContext ctx, [FromRoute] string id) =>
+// {
+//     //Implementar a alteração do status da tarefa
+// });
 
 //GET: http://localhost:5273/tarefas/naoconcluidas
 app.MapGet("/api/tarefas/naoconcluidas", ([FromServices] AppDataContext ctx) =>
@@ -71,5 +102,7 @@ app.MapGet("/api/tarefas/concluidas", ([FromServices] AppDataContext ctx) =>
 {
     //Implementar a listagem de tarefas concluídas
 });
+
+app.UseCors("Acesso Total");
 
 app.Run();
