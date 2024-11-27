@@ -17,7 +17,7 @@ function AlterarTarefa() {
     if (id) {
       axios
         .get<AltetarTarefa>(
-          `http://localhost:5000/api/tarega/buscar/${id}`
+          `http://localhost:5000/api/tarefas/buscar/${id}`
         )
         .then((resposta) => {
           setTitulo(resposta.data.titulo);
@@ -47,7 +47,7 @@ function AlterarTarefa() {
     };
 
     axios
-      .put(`http://localhost:5000/api/tarefa/alterar/${id}`, tarefa)
+      .put(`http://localhost:5000/api/tarefas/alterar/${id}`, tarefa)
       .then((resposta) => {
         console.log(resposta.data);
       });

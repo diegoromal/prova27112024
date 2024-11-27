@@ -61,6 +61,18 @@ app.MapPost("/api/tarefas/cadastrar", ([FromServices] AppDataContext ctx, [FromB
     return Results.Created("", tarefa);
 });
 
+//GET: http://localhost:5273/tarefas/buscar/{id}
+app.MapGet("/api/tarefas/buscar/{id}", ([FromRoute] string id,
+    [FromServices] AppDataContext ctx) =>
+{
+    Tarefa? tarefa = ctx.Tarefas.Find(id);
+    if (tarefa == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(tarefa);
+});
+
 //PUT: http://localhost:5273/tarefas/alterar/{id}
 
 app.MapPut("/api/tarefas/alterar/{id}", ([FromRoute] string id,
@@ -86,21 +98,27 @@ app.MapPut("/api/tarefas/alterar/{id}", ([FromRoute] string id,
     return Results.Ok(tarefa);
 });
 
-// app.MapPut("/api/tarefas/alterar/{id}", ([FromServices] AppDataContext ctx, [FromRoute] string id) =>
-// {
-//     //Implementar a alteração do status da tarefa
-// });
-
 //GET: http://localhost:5273/tarefas/naoconcluidas
 app.MapGet("/api/tarefas/naoconcluidas", ([FromServices] AppDataContext ctx) =>
 {
-    //Implementar a listagem de tarefas não concluídas
+    var tarefasNaoConcluidas = ctx.Tarefas.Where(tarefa => tarefa.Status != "Concluida" && tarefa.Status != "concluida").ToList();
+    if (tarefasNaoConcluidas == null)
+    {
+        return Results.NotFound("Nenhuma tarefa não concluida encontrada");
+    }
+    return Results.Ok(ctx.Tarefas.Include(x => x.Categoria).ToList());
+    
 });
 
 //GET: http://localhost:5273/tarefas/concluidas
 app.MapGet("/api/tarefas/concluidas", ([FromServices] AppDataContext ctx) =>
 {
-    //Implementar a listagem de tarefas concluídas
+     var tarefasConcluidas = ctx.Tarefas.Where(tarefa => tarefa.Status == "Concluida" && tarefa.Status == "concluida").ToList();
+    if (tarefasConcluidas == null)
+    {
+        return Results.NotFound("Nenhuma tarefa concluida encontrada");
+    }
+    return Results.Ok(ctx.Tarefas.Include(x => x.Categoria).ToList());
 });
 
 app.UseCors("Acesso Total");

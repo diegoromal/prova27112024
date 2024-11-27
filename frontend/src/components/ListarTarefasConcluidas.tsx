@@ -3,13 +3,13 @@ import axios from "axios";
 import type { Tarefa } from "../models/Tarefa";
 import { Link } from "react-router-dom";
 
-function ListaTarefas() {
+function ListaTarefasConcluidas() {
   const [tarefas, setTarefas] = useState<Tarefa[]>([]);
 
   useEffect(() => {
     const fetchTarefas = async () => {
       try {
-        const response = await axios.get<Tarefa[]>("http://localhost:5000/api/tarefas/listar");
+        const response = await axios.get<Tarefa[]>("http://localhost:5000/api/tarefas/concluidas");
         setTarefas(response.data);
       } catch (error) {
         new Error("Erro ao buscar tarefas.");
@@ -52,4 +52,4 @@ function ListaTarefas() {
   );
 }
 
-export default ListaTarefas;
+export default ListaTarefasConcluidas;

@@ -2,6 +2,8 @@ import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 import CadastroTarefa from "./components/CadastroTarefa";
 import ListaTarefas from "./components/ListaTarefas";
 import AlterarTarefa from "./components/AlterarTarefa";
+import ListaTarefasConcluidas from "./components/ListarTarefasConcluidas";
+import ListaTarefasNaoConcluidas from "./components/ListarTarefasNaoConcluidas";
 
 function App() {
   return (
@@ -21,8 +23,13 @@ function App() {
               </Link>
             </li>
             <li>
-              <Link to="/pages/tarefa/alterar">
-                Alterar Tarefa
+              <Link to="/pages/tarefa/listar/concluidas">
+                Tarefas Concluidas
+              </Link>
+            </li>
+            <li>
+              <Link to="/pages/tarefa/listar/naoconcluidas">
+                Tarefas Não Concluidas
               </Link>
             </li>
           </ul>
@@ -40,6 +47,14 @@ function App() {
           <Route
             path="/pages/tarefa/alterar/:id"
             element={<AlterarTarefa />}
+          />
+          <Route
+          path="/pages/tarefa/listar/concluidas"
+          element={<ListaTarefasConcluidas />}
+          />
+          <Route
+          path="/pages/tarefa/listar/naoconcluidas"
+          element={<ListaTarefasNaoConcluidas />}
           />
         </Routes>
       </BrowserRouter>
